@@ -3,6 +3,7 @@ package com.drivespace;
 import androidx.fragment.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -10,11 +11,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private PlacesClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Initialize the SDK
         Places.initialize(getApplicationContext(), "AIzaSyCHooFYiGz2x4uWG0oLdY-kGlXTV7qRQRU");
+
+        client = Places.createClient(this); //Client must be initialized with api key.
     }
 
     /**
@@ -41,12 +47,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Map lot = createSampleMap();
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng walker = new LatLng(36.068181881660195, -79.81209261755306);
 
+        String str = "Walker Avenue Parking Deck";
+        String txt = "Available Spots: 12  Premium Spots: 3\nClick to reserve..";
+        mMap.addMarker(new MarkerOptions().position(walker).title(str).snippet(txt).draggable(true));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(walker));
 
+    }
+
+    public Map createSampleMap(){
+        ParkingLot lot = new ParkingLot("Devon Loy", 25);
+        Map map = new Map("ChIJRRWT70EZU4gRaoBKHGC" ,lot, client); //Walker Ave Parking Deck
+
+        return map;
     }
 }
